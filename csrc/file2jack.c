@@ -543,17 +543,23 @@ static int sox_convert (int infd, const char *name) {
   char ratestr [6 + 1];
   snprintf (ratestr, sizeof (ratestr), "%d", srate);
   const char *argv [] = { //"/tmp/printargs",
-    "sox", "-q", "--no-clobber",
-    "-t", loext, "-", "-t", "flac", "-",
-    "rate", ratestr,
-    NULL
+   "ffmpeg","-i","/dev/stdin","-c:a","flac","-ar",ratestr,"-f","flac","-y","/dev/stdout",
+   NULL
   };
 
-  TRACE (TRACE_INFO, "Calling sox to convert file %s", name);
+/*
+   "sox", "-q", "--no-clobber",
+    "-t", loext, "-", "-t", "flac", "-",
+    "rate", ratestr,
+   
+ *
+ * */
+
+  TRACE (TRACE_INFO, "Calling ffmpeg to convert file %s", name);
   int rc = mysystem (argv, stdfd);
   close (infd); free (loext);
   if (rc != EXIT_SUCCESS) {
-    TRACE (TRACE_FATAL, "Could not execute sox (exit=%d)", rc);
+    TRACE (TRACE_FATAL, "Could not execute ffmpeg (exit=%d)", rc);
     myshutdown (1);
   }
 
